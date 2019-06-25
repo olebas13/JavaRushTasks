@@ -1,11 +1,18 @@
 package com.javarush.games.snake;
 
+import com.javarush.engine.cell.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Snake {
 
+    private static final String HEAD_SIGN = "\uD83D\uDC7E";
+    private static final String BODY_SIGN = "\u26AB";
+
     private List<GameObject> snakeParts = new ArrayList<>();
+    public boolean isAlive = true;
+    private Direction direction = Direction.LEFT;
 
     public Snake(int x, int y) {
         GameObject firstPart = new GameObject(x, y);
@@ -14,5 +21,57 @@ public class Snake {
         snakeParts.add(firstPart);
         snakeParts.add(secondPart);
         snakeParts.add(thirdPart);
+    }
+
+    public void draw(Game game) {
+        for (int i = 0; i < snakeParts.size(); i++) {
+            if (isAlive) {
+                if (i == 0) {
+                    game.setCellValueEx(snakeParts.get(i).x, snakeParts.get(i).y, Color.NONE, HEAD_SIGN, Color.BLACK, 75);
+                } else {
+                    game.setCellValueEx(snakeParts.get(i).x, snakeParts.get(i).y, Color.NONE, BODY_SIGN, Color.BLACK, 75);
+                }
+            } else {
+                if (i == 0) {
+                    game.setCellValueEx(snakeParts.get(i).x, snakeParts.get(i).y, Color.NONE, HEAD_SIGN, Color.RED, 75);
+                } else {
+                    game.setCellValueEx(snakeParts.get(i).x, snakeParts.get(i).y, Color.NONE, BODY_SIGN, Color.RED, 75);
+                }
+            }
+
+
+        }
+    }
+
+    public void move() {
+        GameObject newHead = createNewHead();
+        if (newHead.x >= SnakeGame.HEIGHT || newHead.x < 0 || newHead.y < 0 || newHead.y >= SnakeGame.WIDTH) {
+            isAlive = false;
+        } else {
+            snakeParts.add(0, newHead);
+            removeTail();
+        }
+    }
+
+    public GameObject createNewHead() {
+        GameObject newObject = null;
+        if (direction == Direction.UP) {
+            newObject = new GameObject(snakeParts.get(0).x, snakeParts.get(0).y - 1);
+        } else if (direction == Direction.DOWN) {
+            newObject = new GameObject(snakeParts.get(0).x, snakeParts.get(0).y + 1);
+        } else if (direction == Direction.RIGHT) {
+            newObject = new GameObject(snakeParts.get(0).x + 1, snakeParts.get(0).y);
+        } else if (direction == Direction.LEFT) {
+            newObject = new GameObject(snakeParts.get(0).x - 1, snakeParts.get(0).y);
+        }
+        return newObject;
+    }
+
+    public void removeTail() {
+        snakeParts.remove(snakeParts.size() - 1);
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
     }
 }
