@@ -41,13 +41,24 @@ public class Snake {
         }
     }
 
-    public void move() {
+    public void move(Apple apple) {
         GameObject newHead = createNewHead();
         if (newHead.x >= SnakeGame.HEIGHT || newHead.x < 0 || newHead.y < 0 || newHead.y >= SnakeGame.WIDTH) {
             isAlive = false;
-        } else {
+        } else if (newHead.x == apple.x && newHead.y == apple.y) {
+            apple.isAlive = false;
+            if (checkCollision(newHead)) {
+                isAlive = false;
+            }
             snakeParts.add(0, newHead);
-            removeTail();
+        } else {
+            if (checkCollision(newHead)) {
+                isAlive = false;
+            } else {
+                snakeParts.add(0, newHead);
+                removeTail();
+            }
+
         }
     }
 
@@ -69,6 +80,15 @@ public class Snake {
         snakeParts.remove(snakeParts.size() - 1);
     }
 
+    public boolean checkCollision(GameObject go) {
+        for (GameObject snakePart : snakeParts) {
+            if (go.x == snakePart.x && go.y == snakePart.y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setDirection(Direction direction) {
         if (direction == Direction.DOWN && this.direction == Direction.UP) {
             return;
@@ -82,7 +102,6 @@ public class Snake {
         if (direction == Direction.LEFT && this.direction == Direction.RIGHT) {
             return;
         }
-
         this.direction = direction;
     }
 }
