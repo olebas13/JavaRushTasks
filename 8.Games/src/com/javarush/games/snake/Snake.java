@@ -38,8 +38,6 @@ public class Snake {
                     game.setCellValueEx(snakeParts.get(i).x, snakeParts.get(i).y, Color.NONE, BODY_SIGN, Color.RED, 75);
                 }
             }
-
-
         }
     }
 
@@ -72,6 +70,19 @@ public class Snake {
     }
 
     public void setDirection(Direction direction) {
+        if (direction == Direction.DOWN && this.direction == Direction.UP) {
+            return;
+        }
+        if (direction == Direction.UP && this.direction == Direction.DOWN) {
+            return;
+        }
+        if (direction == Direction.RIGHT && this.direction == Direction.LEFT) {
+            return;
+        }
+        if (direction == Direction.LEFT && this.direction == Direction.RIGHT) {
+            return;
+        }
+
         this.direction = direction;
     }
 }
