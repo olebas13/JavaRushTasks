@@ -90,18 +90,22 @@ public class Snake {
     }
 
     public void setDirection(Direction direction) {
-        if (direction == Direction.DOWN && this.direction == Direction.UP) {
+        if ((direction == Direction.DOWN || snakeParts.get(0).y == snakeParts.get(1).y) && this.direction == Direction.UP) {
             return;
         }
-        if (direction == Direction.UP && this.direction == Direction.DOWN) {
+        if ((direction == Direction.UP || snakeParts.get(0).y == snakeParts.get(1).y) && this.direction == Direction.DOWN) {
             return;
         }
-        if (direction == Direction.RIGHT && this.direction == Direction.LEFT) {
+        if ((direction == Direction.RIGHT || snakeParts.get(0).x == snakeParts.get(1).x) && this.direction == Direction.LEFT) {
             return;
         }
-        if (direction == Direction.LEFT && this.direction == Direction.RIGHT) {
+        if ((direction == Direction.LEFT || snakeParts.get(0).x == snakeParts.get(1).x) && this.direction == Direction.RIGHT) {
             return;
         }
         this.direction = direction;
+    }
+
+    public int getLength() {
+        return snakeParts.size();
     }
 }

@@ -6,10 +6,13 @@ public class SnakeGame extends Game {
 
     public static final int WIDTH = 15;
     public static final int HEIGHT = 15;
+    private static final int GOAL = 28;
 
     private Snake snake;
     private Apple apple;
     private int turnDelay;
+    private int score;
+    private boolean isGameStopped;
 
     public void initialize() {
         setScreenSize(WIDTH, HEIGHT);
@@ -19,7 +22,17 @@ public class SnakeGame extends Game {
     public void onTurn(int step) {
         snake.move(apple);
         if (!apple.isAlive) {
+            score += 5;
+            setScore(score);
+            turnDelay -= 10;
+            setTurnTimer(turnDelay);
             createNewApple();
+        }
+        if (!snake.isAlive) {
+            gameOver();
+        }
+        if (snake.getLength() > GOAL) {
+            win();
         }
         drawScene();
     }
@@ -37,11 +50,17 @@ public class SnakeGame extends Game {
         if (key == Key.DOWN) {
             snake.setDirection(Direction.DOWN);
         }
+        if (key == Key.SPACE && isGameStopped) {
+            createGame();
+        }
     }
 
     private void createGame() {
+        score = 0;
+        setScore(score);
         snake = new Snake(WIDTH / 2, HEIGHT / 2);
         createNewApple();
+        isGameStopped = false;
         drawScene();
         turnDelay = 300;
         setTurnTimer(turnDelay);
@@ -58,9 +77,21 @@ public class SnakeGame extends Game {
     }
 
     private void createNewApple() {
-        int appleX = getRandomNumber(WIDTH);
-        int appleY = getRandomNumber(HEIGHT);
-        apple = new Apple(appleX, appleY);
+        do {
+            apple = new Apple(getRandomNumber(WIDTH), getRandomNumber(HEIGHT));
+        } while (snake.checkCollision(apple));
+    }
+
+    private void win() {
+        stopTurnTimer();
+        isGameStopped = true;
+        showMessageDialog(Color.CRIMSON, "YOU WIN", Color.GAINSBORO, 40);
+    }
+
+    private void gameOver() {
+        stopTurnTimer();
+        isGameStopped = true;
+        showMessageDialog(Color.BURLYWOOD, "GAME OVER", Color.AZURE, 32);
     }
     
 }
