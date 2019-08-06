@@ -9,10 +9,15 @@ public class RacerGame extends Game {
     public static final int HEIGHT = 64;
     public static final int CENTER_X = WIDTH / 2;
     public static final int ROADSIDE_WIDTH = 14;
+    private static final int RACE_GOAL_CARS_COUNT = 30;
 
     private RoadMarking roadMarking;
     private PlayerCar player;
     private RoadManager roadManager;
+    private FinishLine finishLine;
+    private ProgressBar progressBar;
+    private boolean isGameStopped;
+    private int score;
 
     @Override
     public void initialize() {
@@ -25,15 +30,21 @@ public class RacerGame extends Game {
         roadMarking = new RoadMarking();
         player = new PlayerCar();
         roadManager = new RoadManager();
+        finishLine = new FinishLine();
+        progressBar = new ProgressBar(RACE_GOAL_CARS_COUNT);
         drawScene();
         setTurnTimer(40);
+        score = 3500;
+        isGameStopped = false;
     }
 
     private void drawScene() {
         drawField();
+        progressBar.draw(this);
         roadManager.draw(this);
         roadMarking.draw(this);
         player.draw(this);
+        finishLine.draw(this);
     }
 
     private void drawField() {
@@ -62,12 +73,29 @@ public class RacerGame extends Game {
         roadMarking.move(player.speed);
         player.move();
         roadManager.move(player.speed);
+        finishLine.move(player.speed);
+        progressBar.move(roadManager.getPassedCarsCount());
     }
 
     @Override
     public void onTurn(int step) {
+        score -= 5;
+        if (roadManager.checkCrush(player)) {
+            gameOver();
+            drawScene();
+            return;
+        }
+        if (roadManager.getPassedCarsCount() >= RACE_GOAL_CARS_COUNT) {
+            finishLine.show();
+        }
+        if (finishLine.isCrossed(player)) {
+            win();
+            drawScene();
+            return;
+        }
         moveAll();
         roadManager.generateNewRoadObjects(this);
+        setScore(score);
         drawScene();
     }
 
@@ -79,6 +107,12 @@ public class RacerGame extends Game {
         if (key == Key.LEFT) {
             player.setDirection(Direction.LEFT);
         }
+        if (key == Key.UP) {
+            player.speed = 2;
+        }
+        if (key == Key.SPACE && isGameStopped == true) {
+            createGame();
+        }
     }
 
     @Override
@@ -89,5 +123,22 @@ public class RacerGame extends Game {
         if (key == Key.LEFT && player.getDirection() == Direction.LEFT) {
             player.setDirection(Direction.NONE);
         }
+        if (key == Key.UP) {
+            player.speed = 1;
+        }
+    }
+
+    private void gameOver() {
+        isGameStopped = true;
+        showMessageDialog(Color.CRIMSON, "GAME OVER", Color.ALICEBLUE, 42);
+        stopTurnTimer();
+        player.stop();
+    }
+
+    private void win() {
+        isGameStopped = true;
+        showMessageDialog(Color.RED, "YOU WINNER!!!", Color.CHARTREUSE, 42);
+        stopTurnTimer();
+
     }
 }

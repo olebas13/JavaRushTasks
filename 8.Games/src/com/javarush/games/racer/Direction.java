@@ -4,9 +4,5 @@ public enum Direction {
 
     NONE,
     RIGHT,
-    LEFT;
-
-    private Direction() {
-
-    }
+    LEFT
 }
